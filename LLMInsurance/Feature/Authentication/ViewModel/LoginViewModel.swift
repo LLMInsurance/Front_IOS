@@ -17,17 +17,28 @@ class LoginViewModel: ObservableObject {
     @Published var isAlertPresented: Bool = false
     @Published var showAlert: Bool = false
     @Published var isLoginSuccess: Bool = false
+    @Published var isPasswordWrong: Bool = false
+    @Published var passwordErrorMessage: String = ""
+    @Published var isLoading: Bool = false
+
+    // 로그인 테스트 용
+    let correctId = "test"
+    let correctPassword = "1234"
 
     func handleLogin() {
-        // TODO: 로그인 로직 구현
-        print("Login with id: \(id), password: \(password)")
-    }
-
-    func handleGoogleLogin() {
-        // TODO: 구글 로그인 구현
-    }
-
-    func handleAppleLogin() {
-        // TODO: 애플 로그인 구현
+        isLoading = true
+        // 1초 후에 실제 로그인 로직 실행
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+            guard let self = self else { return }
+            if id == correctId && password == correctPassword {
+                isPasswordWrong = false
+                passwordErrorMessage = ""
+                // 로그인 성공 처리
+            } else {
+                isPasswordWrong = true
+                passwordErrorMessage = "로그인 정보가 올바르지 않습니다"
+            }
+            isLoading = false
+        }
     }
 }

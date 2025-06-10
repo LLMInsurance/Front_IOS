@@ -11,6 +11,7 @@ import SwiftUI
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
     @FocusState private var focusedField: Field?
+    @State private var shakeTrigger: CGFloat = 0
 
     enum Field {
         case id, password
@@ -29,23 +30,39 @@ struct LoginView: View {
                     TextField("아이디를 입력하세요", text: $viewModel.id)
                         .focused($focusedField, equals: .id)
                         .submitLabel(.next)
+                        .onSubmit {
+                            focusedField = .password
+                        }
+                        .frame(height: 22)
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(
+                    (focusedField == .id ? Color.white : Color(.systemGray6))
+                        .animation(.easeInOut(duration: 0.2), value: focusedField)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 50)
+                        .stroke(focusedField == .id ? Color.primaryBlue : Color.clear, lineWidth: 2)
+                        .animation(.easeInOut(duration: 0.2), value: focusedField)
+                )
                 .cornerRadius(50)
 
                 // 비밀번호 입력
                 HStack {
                     Image(systemName: "lock")
                         .foregroundColor(.gray)
-                    if viewModel.isPasswordVisible {  // 비밀번호 보이기 버튼
+                    if viewModel.isPasswordVisible {
                         TextField("비밀번호를 입력하세요", text: $viewModel.password)
+                            .id("password")
                             .focused($focusedField, equals: .password)
                             .submitLabel(.done)
+                            .frame(height: 22)
                     } else {
                         SecureField("비밀번호를 입력하세요", text: $viewModel.password)
+                            .id("password")
                             .focused($focusedField, equals: .password)
                             .submitLabel(.done)
+                            .frame(height: 22)
                     }
                     Button(action: { viewModel.isPasswordVisible.toggle() }) {
                         Image(systemName: viewModel.isPasswordVisible ? "eye.slash" : "eye")
@@ -53,21 +70,52 @@ struct LoginView: View {
                     }
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .background(
+                    (focusedField == .password ? Color.white : Color(.systemGray6))
+                        .animation(.easeInOut(duration: 0.2), value: focusedField)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 50)
+                        .stroke(
+                            viewModel.isPasswordWrong
+                                ? Color.red
+                                : (focusedField == .password ? Color.primaryBlue : Color.clear),
+                            lineWidth: 2
+                        )
+                        .animation(.easeInOut(duration: 0.2), value: viewModel.isPasswordWrong)
+                )
                 .cornerRadius(50)
+                .warning(shakeTrigger)
+
+                // 경고문
+                if viewModel.isPasswordWrong {
+                    Text(viewModel.passwordErrorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .padding(.leading, 16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
 
                 // Login 버튼
                 Button(action: {
                     focusedField = nil  // 키보드 닫기
                     viewModel.handleLogin()
                 }) {
-                    Text("로그인")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.primaryBlue)
-                        .foregroundColor(.white)
-                        .cornerRadius(50)
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    } else {
+                        Text("로그인")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
                 }
+                .background(Color.primaryBlue)
+                .foregroundColor(.white)
+                .cornerRadius(50)
+                .disabled(viewModel.isLoading)
                 .padding(.top, 16)
 
                 // Sign Up 링크
@@ -75,7 +123,7 @@ struct LoginView: View {
                     Text("아직 회원이 아니신가요?")
                         .foregroundColor(.gray)
                     NavigationLink("회원가입", destination: SignUpView())
-                        .foregroundColor(.blue)
+                        .foregroundColor(Color.primaryBlue)
                 }
                 Spacer()
             }
@@ -91,6 +139,13 @@ struct LoginView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("로그인")
+        .onChange(of: viewModel.isPasswordWrong) { isWrong in
+            if isWrong {
+                withAnimation(.default) {
+                    shakeTrigger += 1
+                }
+            }
+        }
     }
 }
 

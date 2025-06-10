@@ -8,6 +8,24 @@
 import SwiftUI
 import UIKit
 
+struct WarningEffect: GeometryEffect {
+    var animatableData: CGFloat
+    var amount: CGFloat = 8  // 흔들림 강도
+    var shakeCount = 4  // 흔들림 횟수
+
+    init(_ interval: CGFloat) {
+        self.animatableData = interval
+    }
+
+    func effectValue(size: CGSize) -> ProjectionTransform {
+        ProjectionTransform(
+            CGAffineTransform(
+                translationX: amount * sin(animatableData * CGFloat(shakeCount) * .pi),
+                y: 0
+            ))
+    }
+}
+
 extension View {
     // 키보드 내리기
     func endTextEditing() {
@@ -17,5 +35,10 @@ extension View {
             from: nil as AnyObject?,
             for: nil
         )
+    }
+
+    func warning(_ interval: CGFloat) -> some View {
+        self.modifier(WarningEffect(interval))
+            .animation(.default, value: interval)
     }
 }
