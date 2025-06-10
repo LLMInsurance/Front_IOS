@@ -19,7 +19,7 @@ struct OnBoardingView: View {
                         .frame(width: 150, height: 150)
                     Text("CareEasy")
                         .font(.system(size: 32, weight: .bold))
-                        .foregroundColor(Color(red: 72 / 255, green: 133 / 255, blue: 255 / 255))
+                        .foregroundColor(Color.primaryBlue)
                 }
                 // 나머지 뷰
                 VStack(spacing: 8) {
@@ -31,6 +31,7 @@ struct OnBoardingView: View {
                         .font(.body)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
+
                 }
                 .padding(.bottom, 32)
 
@@ -40,7 +41,7 @@ struct OnBoardingView: View {
                         Text("Login")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color(red: 72 / 255, green: 133 / 255, blue: 255 / 255))
+                            .background(Color.primaryBlue)
                             .foregroundColor(.white)
                             .cornerRadius(25)
                     }
@@ -50,13 +51,11 @@ struct OnBoardingView: View {
                         Text("Sign Up")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .foregroundColor(
-                                Color(red: 72 / 255, green: 133 / 255, blue: 255 / 255)
-                            )
+                            .foregroundColor(Color.primaryBlue)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 25)
                                     .stroke(
-                                        Color(red: 72 / 255, green: 133 / 255, blue: 255 / 255),
+                                        Color.primaryBlue,
                                         lineWidth: 1)
                             )
                     }

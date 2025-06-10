@@ -15,7 +15,9 @@ struct SignUpView: View {
                 Text("SignUp")
             }
         }
+        .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("회원가입")
+        .ignoresSafeArea(.keyboard, edges: .bottom)
     }
 }
 
