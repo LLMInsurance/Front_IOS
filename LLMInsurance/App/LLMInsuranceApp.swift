@@ -5,15 +5,13 @@
 //  Created by 안홍범 on 6/10/25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @main
 struct LLMInsuranceApp: App {
     var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
+        let schema = Schema([])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
         do {
@@ -25,7 +23,7 @@ struct LLMInsuranceApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            OnBoardingView()
         }
         .modelContainer(sharedModelContainer)
     }
