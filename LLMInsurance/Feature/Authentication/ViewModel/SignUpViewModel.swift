@@ -9,4 +9,91 @@ import SwiftUI
 
 @MainActor
 class SignUpViewModel: ObservableObject {
+    @Published var id: String = ""  // 아이디
+    @Published var idErrorMessage: String = ""  // 아이디 오류 메시지
+    @Published var isIdRuleWrong: Bool = false  // 아이디 규칙 오류 여부
+    @Published var isIdDuplicated: Bool = false  // 아이디 중복 여부
+
+    @Published var password: String = ""  // 비밀번호
+    @Published var confirmPassword: String = ""  // 비밀번호 확인
+    @Published var isPasswordWrong: Bool = false  // 비밀번호 오류 여부
+    @Published var passwordErrorMessage: String = ""  // 비밀번호 오류 메시지
+    @Published var isPasswordRuleWrong: Bool = false  // 비밀번호 규칙 오류 여부
+    @Published var isPasswordConfirmWrong: Bool = false  // 비밀번호 일치 오류 여부
+
+    @Published var email: String = ""  // 이메일
+    @Published var isLoading: Bool = false  // 로딩 여부
+
+    // 아이디 중복 테스트용
+    let duplicatedId = "test"
+
+    // 규칙 메시지
+    let idRuleMessage = "6~12자의 영문과 숫자를 모두 포함해야 합니다"
+    let passwordRuleMessage = "8~16자의 영문 대 소문자 및 숫자만 사용 가능합니다"
+    let passwordConfirmMessage = "비밀번호가 일치하지 않습니다"
+
+    init() {
+        // 비밀번호 입력 오류 초기화
+        isPasswordWrong = false
+        passwordErrorMessage = ""
+    }
+
+    // 아이디 중복 확인
+    func checkIdDuplication() {
+        isIdDuplicated = id == duplicatedId
+        if isIdDuplicated {
+            idErrorMessage = "이미 존재하는 아이디입니다."
+        } else {
+            idErrorMessage = ""
+        }
+    }
+
+    // 아이디 규칙 확인
+    // 한글 허용 안됨
+    func checkIdRule() {
+        let pattern = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]+$"
+        let regex = try! NSRegularExpression(pattern: pattern)
+        let range = NSRange(location: 0, length: id.utf16.count)
+        let matches = regex.firstMatch(in: id, options: [], range: range) != nil
+
+        if id.count < 6 || id.count > 12 || !matches {
+            idErrorMessage = idRuleMessage
+            isIdRuleWrong = true
+        } else {
+            idErrorMessage = ""
+            isIdRuleWrong = false
+        }
+    }
+
+    // 비밀번호 규칙 확인
+    func checkPasswordRule() {
+        if password.count < 8 || password.count > 16
+            || !password.allSatisfy({ $0.isLetter || $0.isNumber })
+        {
+            passwordErrorMessage = passwordRuleMessage
+            isPasswordRuleWrong = true
+        } else {
+            passwordErrorMessage = ""
+            isPasswordRuleWrong = false
+        }
+    }
+
+    // 비밀번호 일치 확인
+    func checkPasswordConfirm() {
+        if !confirmPassword.isEmpty && password != confirmPassword {
+            passwordErrorMessage = passwordConfirmMessage
+            isPasswordConfirmWrong = true
+        } else {
+            passwordErrorMessage = ""
+            isPasswordConfirmWrong = false
+        }
+    }
+
+    // 다음 정보 입력뷰로 이동
+    func goToNextView() {
+        isLoading = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.isLoading = false
+        }
+    }
 }

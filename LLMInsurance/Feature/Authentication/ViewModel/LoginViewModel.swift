@@ -26,8 +26,8 @@ class LoginViewModel: ObservableObject {
     let correctPassword = "1234"
 
     func handleLogin() {
+        isPasswordWrong = false
         isLoading = true
-        // 1초 후에 실제 로그인 로직 실행
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
             if id == correctId && password == correctPassword {

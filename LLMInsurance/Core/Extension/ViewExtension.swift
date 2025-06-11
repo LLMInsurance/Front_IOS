@@ -8,7 +8,7 @@
 import SwiftUI
 import UIKit
 
-struct WarningEffect: GeometryEffect {
+struct WarningEffect: GeometryEffect {  // 틀림 효과(흔들림)
     var animatableData: CGFloat
     var amount: CGFloat = 8  // 흔들림 강도
     var shakeCount = 4  // 흔들림 횟수
@@ -37,6 +37,7 @@ extension View {
         )
     }
 
+    // 흔들림 효과
     func warning(_ interval: CGFloat) -> some View {
         self.modifier(WarningEffect(interval))
             .animation(.default, value: interval)

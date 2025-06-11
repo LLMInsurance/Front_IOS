@@ -13,7 +13,7 @@ struct LoginView: View {
     @FocusState private var focusedField: Field?
     @State private var shakeTrigger: CGFloat = 0
 
-    enum Field {
+    enum Field {  // 포커스 관리용 열거형
         case id, password
     }
 
@@ -23,6 +23,7 @@ struct LoginView: View {
                 .ignoresSafeArea()
             VStack(spacing: 20) {
                 Spacer()
+
                 // 이메일 입력
                 HStack {
                     Image(systemName: "person")
@@ -42,10 +43,16 @@ struct LoginView: View {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 50)
-                        .stroke(focusedField == .id ? Color.primaryBlue : Color.clear, lineWidth: 2)
-                        .animation(.easeInOut(duration: 0.2), value: focusedField)
+                        .stroke(
+                            viewModel.isPasswordWrong
+                                ? Color.red
+                                : (focusedField == .id ? Color.primaryBlue : Color.clear),
+                            lineWidth: 2
+                        )
+                        .animation(.easeInOut(duration: 0.2), value: viewModel.isPasswordWrong)
                 )
                 .cornerRadius(50)
+                .warning(shakeTrigger)
 
                 // 비밀번호 입력
                 HStack {
@@ -70,11 +77,11 @@ struct LoginView: View {
                     }
                 }
                 .padding()
-                .background(
+                .background(  // 포커스 시 흰색, 아니면 회색
                     (focusedField == .password ? Color.white : Color(.systemGray6))
                         .animation(.easeInOut(duration: 0.2), value: focusedField)
                 )
-                .overlay(
+                .overlay(  // 비밀번호 입력 오류 시 빨간색 테두리, 포커스 시 파란색 테두리
                     RoundedRectangle(cornerRadius: 50)
                         .stroke(
                             viewModel.isPasswordWrong
@@ -118,7 +125,7 @@ struct LoginView: View {
                 .disabled(viewModel.isLoading)
                 .padding(.top, 16)
 
-                // Sign Up 링크
+                // 회원가입 링크
                 HStack {
                     Text("아직 회원이 아니신가요?")
                         .foregroundColor(.gray)

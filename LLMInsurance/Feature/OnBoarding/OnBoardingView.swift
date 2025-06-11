@@ -12,22 +12,22 @@ struct OnBoardingView: View {
         NavigationView {
             VStack(spacing: 32) {
                 Spacer()
-                // 아이콘 + CareEasy 텍스트 묶기
+
                 VStack(spacing: 16) {
                     Image("Icon")
                         .resizable()
                         .frame(width: 150, height: 150)
-                    Text("CareEasy")
+                    Text("어플명")
                         .font(.system(size: 32, weight: .bold))
                         .foregroundColor(Color.primaryBlue)
                 }
                 // 나머지 뷰
                 VStack(spacing: 8) {
-                    Text("Let's get started!")
+                    Text("1줄 소개")
                         .font(.title3)
                         .fontWeight(.bold)
                         .foregroundColor(.black)
-                    Text("Login to enjoy the features we've\nprovided, and stay healthy!")
+                    Text("간략 소개")
                         .font(.body)
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
