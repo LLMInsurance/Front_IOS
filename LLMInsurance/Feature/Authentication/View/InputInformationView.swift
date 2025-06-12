@@ -221,6 +221,9 @@ struct InformationView: View {
             .cornerRadius(50)
         }
         .padding()
+        .navigationDestination(isPresented: $viewModel.isNextView) {
+            InputDiseaseView()
+        }
     }
 }
 
