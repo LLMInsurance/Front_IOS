@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 class SignUpViewModel: ObservableObject {
     @Published var id: String = ""  // 아이디
-    @Published var idErrorMessage: String = ""  // 아이디 오류 메시지
+    @Published var idMessage: String = ""  // 아이디 오류 메시지
     @Published var isIdRuleWrong: Bool = false  // 아이디 규칙 오류 여부
     @Published var isIdDuplicated: Bool = false  // 아이디 중복 여부
 
@@ -23,9 +23,10 @@ class SignUpViewModel: ObservableObject {
 
     @Published var email: String = ""  // 이메일
     @Published var isLoading: Bool = false  // 로딩 여부
+    @Published var isNextView: Bool = false  // 다음 정보 입력뷰로 이동 여부
 
     // 아이디 중복 테스트용
-    let duplicatedId = "test"
+    let duplicatedId = "testtest"
 
     // 규칙 메시지
     let idRuleMessage = "6~12자의 영문과 숫자를 모두 포함해야 합니다"
@@ -42,9 +43,9 @@ class SignUpViewModel: ObservableObject {
     func checkIdDuplication() {
         isIdDuplicated = id == duplicatedId
         if isIdDuplicated {
-            idErrorMessage = "이미 존재하는 아이디입니다."
+            idMessage = "이미 존재하는 아이디입니다."
         } else {
-            idErrorMessage = ""
+            idMessage = "사용 가능한 아이디입니다."
         }
     }
 
@@ -57,10 +58,10 @@ class SignUpViewModel: ObservableObject {
         let matches = regex.firstMatch(in: id, options: [], range: range) != nil
 
         if id.count < 6 || id.count > 12 || !matches {
-            idErrorMessage = idRuleMessage
+            idMessage = idRuleMessage
             isIdRuleWrong = true
         } else {
-            idErrorMessage = ""
+            idMessage = ""
             isIdRuleWrong = false
         }
     }
@@ -94,6 +95,7 @@ class SignUpViewModel: ObservableObject {
         isLoading = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.isLoading = false
+            self.isNextView = true
         }
     }
 }

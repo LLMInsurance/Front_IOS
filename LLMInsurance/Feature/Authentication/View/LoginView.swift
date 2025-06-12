@@ -9,6 +9,7 @@ import SwiftData
 import SwiftUI
 
 struct LoginView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel = LoginViewModel()
     @FocusState private var focusedField: Field?
     @State private var shakeTrigger: CGFloat = 0
@@ -36,22 +37,7 @@ struct LoginView: View {
                         }
                         .frame(height: 22)
                 }
-                .padding()
-                .background(
-                    (focusedField == .id ? Color.white : Color(.systemGray6))
-                        .animation(.easeInOut(duration: 0.2), value: focusedField)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 50)
-                        .stroke(
-                            viewModel.isPasswordWrong
-                                ? Color.red
-                                : (focusedField == .id ? Color.primaryBlue : Color.clear),
-                            lineWidth: 2
-                        )
-                        .animation(.easeInOut(duration: 0.2), value: viewModel.isPasswordWrong)
-                )
-                .cornerRadius(50)
+                .inputFieldStyle(isFocused: focusedField == .id)
                 .warning(shakeTrigger)
 
                 // 비밀번호 입력
@@ -76,22 +62,7 @@ struct LoginView: View {
                             .foregroundColor(.gray)
                     }
                 }
-                .padding()
-                .background(  // 포커스 시 흰색, 아니면 회색
-                    (focusedField == .password ? Color.white : Color(.systemGray6))
-                        .animation(.easeInOut(duration: 0.2), value: focusedField)
-                )
-                .overlay(  // 비밀번호 입력 오류 시 빨간색 테두리, 포커스 시 파란색 테두리
-                    RoundedRectangle(cornerRadius: 50)
-                        .stroke(
-                            viewModel.isPasswordWrong
-                                ? Color.red
-                                : (focusedField == .password ? Color.primaryBlue : Color.clear),
-                            lineWidth: 2
-                        )
-                        .animation(.easeInOut(duration: 0.2), value: viewModel.isPasswordWrong)
-                )
-                .cornerRadius(50)
+                .inputFieldStyle(isFocused: focusedField == .password)
                 .warning(shakeTrigger)
 
                 // 경고문
@@ -146,10 +117,21 @@ struct LoginView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle("로그인")
-        .onChange(of: viewModel.isPasswordWrong) { isWrong in
+        .onChange(of: viewModel.isPasswordWrong) { _, isWrong in
             if isWrong {
                 withAnimation(.default) {
                     shakeTrigger += 1
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
                 }
             }
         }

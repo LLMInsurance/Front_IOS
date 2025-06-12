@@ -9,6 +9,7 @@ import SwiftData
 import SwiftUI
 
 struct SignUpView: View {
+    @Environment(\.dismiss) private var dismiss
     var body: some View {
         ZStack {
             Color(.systemBackground)
@@ -27,6 +28,17 @@ struct SignUpView: View {
         .navigationTitle("회원가입")
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .frame(maxWidth: 400)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.blue)
+                }
+            }
+        }
     }
 }
 
@@ -42,11 +54,16 @@ struct InputView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Spacer().frame(height: 32)
+            Text("로그인 정보")
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundColor(Color.primaryBlue)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
             // 아이디 입력 (중복 확인 버튼 포함)
             HStack {
-                Image(systemName: "person")
+                Image(systemName: "person.text.rectangle")
                     .foregroundColor(.gray)
                 TextField("아이디를 입력하세요", text: $viewModel.id)
                     .focused($focusedField, equals: .id)
@@ -54,7 +71,7 @@ struct InputView: View {
                     .onSubmit {
                         focusedField = .password
                     }
-                    .onChange(of: viewModel.id) { _ in
+                    .onChange(of: viewModel.id) {
                         viewModel.checkIdRule()
                     }
                     .frame(height: 22)
@@ -68,34 +85,8 @@ struct InputView: View {
                 }
                 .disabled(viewModel.id.isEmpty)
             }
-            .padding()
-            .background(
-                (focusedField == .id ? Color.white : Color(.systemGray6))
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 50)
-                    .stroke(focusedField == .id ? Color.primaryBlue : Color.clear, lineWidth: 2)
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .cornerRadius(50)
+            .inputFieldStyle(isFocused: focusedField == .id)
             .warning(shakeTrigger)
-
-            if viewModel.isIdDuplicated {  // 아이디 중복 시 메시지 표시
-                Text(viewModel.idErrorMessage)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding(.leading, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-
-            if viewModel.isIdRuleWrong {  // 아이디 규칙 오류 시 메시지 표시
-                Text(viewModel.idErrorMessage)
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .padding(.leading, 16)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
 
             // 비밀번호 입력
             HStack {
@@ -107,24 +98,12 @@ struct InputView: View {
                     .onSubmit {
                         focusedField = .confirmPassword
                     }
-                    .onChange(of: viewModel.password) { _ in
+                    .onChange(of: viewModel.password) {
                         viewModel.checkPasswordRule()
                     }
                     .frame(height: 22)
             }
-            .padding()
-            .background(
-                (focusedField == .password ? Color.white : Color(.systemGray6))
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 50)
-                    .stroke(
-                        focusedField == .password ? Color.primaryBlue : Color.clear, lineWidth: 2
-                    )
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .cornerRadius(50)
+            .inputFieldStyle(isFocused: focusedField == .password)
 
             if viewModel.isPasswordRuleWrong {  // 비밀번호 규칙 오류 시 메시지 표시
                 Text(viewModel.passwordErrorMessage)
@@ -144,25 +123,12 @@ struct InputView: View {
                     .onSubmit {
                         focusedField = .email
                     }
-                    .onChange(of: viewModel.confirmPassword) { _ in
+                    .onChange(of: viewModel.confirmPassword) {
                         viewModel.checkPasswordConfirm()
                     }
                     .frame(height: 22)
             }
-            .padding()
-            .background(
-                (focusedField == .confirmPassword ? Color.white : Color(.systemGray6))
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 50)
-                    .stroke(
-                        focusedField == .confirmPassword ? Color.primaryBlue : Color.clear,
-                        lineWidth: 2
-                    )
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .cornerRadius(50)
+            .inputFieldStyle(isFocused: focusedField == .confirmPassword)
 
             if viewModel.isPasswordConfirmWrong {  // 비밀번호 일치 오류 시 메시지 표시
                 Text(viewModel.passwordErrorMessage)
@@ -181,21 +147,11 @@ struct InputView: View {
                     .frame(height: 22)
                     .textInputAutocapitalization(.never)
             }
-            .padding()
-            .background(
-                (focusedField == .email ? Color.white : Color(.systemGray6))
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 50)
-                    .stroke(focusedField == .email ? Color.primaryBlue : Color.clear, lineWidth: 2)
-                    .animation(.easeInOut(duration: 0.2), value: focusedField)
-            )
-            .cornerRadius(50)
+            .inputFieldStyle(isFocused: focusedField == .email)
 
             Spacer().frame(height: 32)
 
-            // 다음 정보 입력뷰로 이동하는 버튼
+            // 다음 버튼
             Button(action: {
                 viewModel.goToNextView()
             }) {
@@ -203,26 +159,21 @@ struct InputView: View {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .frame(maxWidth: .infinity)
-                        .padding()
                 } else {
                     Text("다음")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                 }
             }
-            .disabled(
-                viewModel.isLoading
-                    || viewModel.id.isEmpty
-                    || viewModel.password.isEmpty
-                    || viewModel.confirmPassword.isEmpty
-            )
             .padding()
             .background(Color.primaryBlue)
             .foregroundColor(.white)
             .cornerRadius(50)
         }
-
         .padding()
+        .navigationDestination(isPresented: $viewModel.isNextView) {
+            InputInformationView()
+        }
     }
 }
 

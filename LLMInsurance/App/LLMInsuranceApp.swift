@@ -23,7 +23,9 @@ struct LLMInsuranceApp: App {
 
     var body: some Scene {
         WindowGroup {
-            OnBoardingView()
+            NavigationStack {
+                OnBoardingView()
+            }
         }
         .modelContainer(sharedModelContainer)
     }

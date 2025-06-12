@@ -10,16 +10,18 @@ import SwiftUI
 
 @MainActor
 class LoginViewModel: ObservableObject {
-    @Published var id: String = ""
-    @Published var password: String = ""
-    @Published var isPasswordVisible: Bool = false
-    @Published var alertMessage: String = ""
-    @Published var isAlertPresented: Bool = false
-    @Published var showAlert: Bool = false
-    @Published var isLoginSuccess: Bool = false
-    @Published var isPasswordWrong: Bool = false
-    @Published var passwordErrorMessage: String = ""
-    @Published var isLoading: Bool = false
+    @Published var id: String = ""  // 아이디
+    @Published var password: String = ""  // 비밀번호
+    @Published var isPasswordVisible: Bool = false  // 비밀번호 보임 여부
+
+    @Published var alertMessage: String = ""  // 알림 메시지
+    @Published var isAlertPresented: Bool = false  // 알림 표시 여부
+    @Published var showAlert: Bool = false  // 알림 표시 여부
+
+    @Published var isLoginSuccess: Bool = false  // 로그인 성공 여부
+    @Published var isPasswordWrong: Bool = false  // 비밀번호 오류 여부
+    @Published var passwordErrorMessage: String = ""  // 비밀번호 오류 메시지
+    @Published var isLoading: Bool = false  // 로딩 여부
 
     // 로그인 테스트 용
     let correctId = "test"
