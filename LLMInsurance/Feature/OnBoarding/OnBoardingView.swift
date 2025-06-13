@@ -37,7 +37,7 @@ struct OnBoardingView: View {
             VStack(spacing: 16) {
                 // 로그인 뷰로 이동
                 NavigationLink(destination: LoginView()) {
-                    Text("Login")
+                    Text("로그인")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Color.primaryBlue)
@@ -47,7 +47,7 @@ struct OnBoardingView: View {
 
                 // 회원가입 뷰로 이동
                 NavigationLink(destination: SignUpView()) {
-                    Text("Sign Up")
+                    Text("회원가입")
                         .frame(maxWidth: .infinity)
                         .padding()
                         .foregroundColor(Color.primaryBlue)

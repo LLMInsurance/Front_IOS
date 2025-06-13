@@ -81,8 +81,67 @@ struct InputInsuranceInformationView: View {
                 }
                 .inputFieldStyle(isFocused: focusedField == .searchInsurance)
 
-                // 검색 결과 표시
+                // 태그 UI
+                HStack {
+                    // 좌우 스크롤 유도 아이콘
+                    if viewModel.myInsurance.count > 2 {
+                        Button(action: {
+                            // 좌우 스크롤 유도 아이콘 클릭 시 좌우 스크롤 유도
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.horizontal, 8)
+                    }
 
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(viewModel.myInsurance, id: \.self) { insurance in
+                                HStack {
+                                    Text(insurance)
+                                        .padding(.horizontal, 8)
+                                    Button(action: {
+                                        viewModel.removeInsurance(insurance)
+                                    }) {
+                                        Image(systemName: "xmark.circle.fill")
+                                    }
+                                }
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 4)
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(16)
+                            }
+                        }
+                    }
+
+                    if viewModel.myInsurance.count > 2 {
+                        Button(action: {
+                            // 좌우 스크롤 유도 아이콘 클릭 시 좌우 스크롤 유도
+                        }) {
+                            Image(systemName: "chevron.right")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.horizontal, 8)
+                    }
+                }
+
+                // 검색 결과 리스트
+                if !viewModel.filteredInsurance.isEmpty {
+                    VStack(alignment: .leading) {
+                        ForEach(viewModel.filteredInsurance, id: \.self) { insurance in
+                            Button(action: {
+                                viewModel.addInsurance(insurance)
+                            }) {
+                                Text(insurance)
+                                    .padding(.vertical, 8)
+                                    .padding(.horizontal, 8)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                            .background(Color.white)
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                }
             }
 
             // 회원 가입 완료 버튼
