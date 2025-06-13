@@ -27,7 +27,7 @@ struct LoginView: View {
 
                 // 이메일 입력
                 HStack {
-                    Image(systemName: "person")
+                    Image(systemName: "person.text.rectangle")
                         .foregroundColor(.gray)
                     TextField("아이디를 입력하세요", text: $viewModel.id)
                         .focused($focusedField, equals: .id)
@@ -125,16 +125,16 @@ struct LoginView: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    dismiss()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.blue)
-                }
-            }
-        }
+        // .toolbar {
+        //     ToolbarItem(placement: .navigationBarLeading) {
+        //         Button(action: {
+        //             dismiss()
+        //         }) {
+        //             Image(systemName: "chevron.left")
+        //                 .foregroundColor(.blue)
+        //         }
+        //     }
+        // }
     }
 }
 

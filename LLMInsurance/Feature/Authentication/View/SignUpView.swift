@@ -17,15 +17,12 @@ struct SignUpView: View {
             ScrollView {  // 가입 정보 입력 뷰
                 InputView()
             }
+            .onTapGesture {
+                endTextEditing()
+            }
         }
-        .background(
-            Color.clear
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    endTextEditing()
-                }
-        )
-        .navigationTitle("회원가입")
+
+        .navigationTitle("회원가입 (1/4)")
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .frame(maxWidth: 400)
         .navigationBarBackButtonHidden(true)
@@ -62,31 +59,58 @@ struct InputView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             // 아이디 입력 (중복 확인 버튼 포함)
-            HStack {
-                Image(systemName: "person.text.rectangle")
-                    .foregroundColor(.gray)
-                TextField("아이디를 입력하세요", text: $viewModel.id)
-                    .focused($focusedField, equals: .id)
-                    .submitLabel(.next)
-                    .onSubmit {
-                        focusedField = .password
+            VStack(alignment: .leading, spacing: 8) {
+                ZStack(alignment: .trailing) {
+                    HStack {
+                        Image(systemName: "person.text.rectangle")
+                            .foregroundColor(.gray)
+                        TextField("아이디를 입력하세요", text: $viewModel.id)
+                            .focused($focusedField, equals: .id)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusedField = .password
+                            }
+                            .onChange(of: viewModel.id) {
+                                viewModel.checkIdRule()
+                            }
+                            .frame(height: 22)
+                            .textInputAutocapitalization(.never)
+                            .padding(.trailing, 100)
                     }
-                    .onChange(of: viewModel.id) {
-                        viewModel.checkIdRule()
+                    .inputFieldStyle(isFocused: focusedField == .id)
+                    .frame(height: 56)
+                    .warning(shakeTrigger)
+
+                    Button(action: {
+                        viewModel.checkIdDuplication()
+                    }) {
+                        Text("중복 확인")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                            .frame(width: 90, height: 54)
+                            .background(
+                                (viewModel.id.isEmpty || viewModel.isIdRuleWrong
+                                    ? Color(.systemGray4) : Color.primaryBlue)
+                                    .clipShape(
+                                        CustomCorner(
+                                            corners: [.topRight, .bottomRight],
+                                            radius: 50
+                                        )
+                                    )
+                            )
                     }
-                    .frame(height: 22)
-                    .textInputAutocapitalization(.never)
-                Button(action: {
-                    viewModel.checkIdDuplication()
-                }) {
-                    Text("중복 확인")
-                        .font(.subheadline)
-                        .foregroundColor(.primaryBlue)
+                    .disabled(viewModel.id.isEmpty || viewModel.isIdRuleWrong)
                 }
-                .disabled(viewModel.id.isEmpty)
+
+                // 아이디 메시지 표시
+                Text(viewModel.idMessage)
+                    .font(.caption)
+                    .foregroundColor(
+                        viewModel.isIdChecked
+                            ? (viewModel.isIdDuplicated ? .red : Color.primaryBlue) : .gray
+                    )
+                    .padding(.leading, 16)
             }
-            .inputFieldStyle(isFocused: focusedField == .id)
-            .warning(shakeTrigger)
 
             // 비밀번호 입력
             HStack {
@@ -102,6 +126,7 @@ struct InputView: View {
                         viewModel.checkPasswordRule()
                     }
                     .frame(height: 22)
+                    .textContentType(.newPassword)
             }
             .inputFieldStyle(isFocused: focusedField == .password)
 
@@ -127,11 +152,12 @@ struct InputView: View {
                         viewModel.checkPasswordConfirm()
                     }
                     .frame(height: 22)
+                    .textContentType(.newPassword)
             }
             .inputFieldStyle(isFocused: focusedField == .confirmPassword)
 
             if viewModel.isPasswordConfirmWrong {  // 비밀번호 일치 오류 시 메시지 표시
-                Text(viewModel.passwordErrorMessage)
+                Text(viewModel.passwordNotMatchMessage)
                     .foregroundColor(.red)
                     .font(.caption)
                     .padding(.leading, 16)
@@ -174,6 +200,20 @@ struct InputView: View {
         .navigationDestination(isPresented: $viewModel.isNextView) {
             InputInformationView()
         }
+    }
+}
+
+struct CustomCorner: Shape {
+    var corners: UIRectCorner
+    var radius: CGFloat
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(
+            roundedRect: rect,
+            byRoundingCorners: corners,
+            cornerRadii: CGSize(width: radius, height: radius)
+        )
+        return Path(path.cgPath)
     }
 }
 

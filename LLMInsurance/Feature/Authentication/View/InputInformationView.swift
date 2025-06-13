@@ -17,15 +17,11 @@ struct InputInformationView: View {
             ScrollView {  // 가입 정보 입력 뷰
                 InformationView()
             }
+            .onTapGesture {
+                endTextEditing()
+            }
         }
-        .background(
-            Color.clear
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    endTextEditing()
-                }
-        )
-        .navigationTitle("회원 가입")
+        .navigationTitle("회원 가입 (2/4)")
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .frame(maxWidth: 400)
         .navigationBarBackButtonHidden(true)
@@ -47,6 +43,8 @@ struct InformationView: View {
     @FocusState private var focusedField: Field?
     @State private var shakeTrigger: CGFloat = 0
     @State private var showJobSheet = false
+    @State private var isOtherSelected: Bool = false
+    @State private var customJob: String = ""
 
     let genderOptions = ["남", "여"]
     let marriedOptions = [false, true]
@@ -108,7 +106,7 @@ struct InformationView: View {
             HStack {
                 Image(systemName: "calendar")
                     .foregroundColor(.gray)
-                TextField("생년월일을 입력하세요", text: $viewModel.birthDate)
+                TextField("생년월일을 입력하세요(8자리)", text: $viewModel.birthDate)
                     .focused($focusedField, equals: .birthDate)
                     .submitLabel(.next)
                     .onSubmit {
@@ -116,7 +114,7 @@ struct InformationView: View {
                     }
                     .frame(height: 22)
                     .textInputAutocapitalization(.never)
-                    .keyboardType(.numbersAndPunctuation)
+                    .keyboardType(.numberPad)
             }
             .inputFieldStyle(isFocused: focusedField == .birthDate)
 
@@ -188,15 +186,37 @@ struct InformationView: View {
             }
             .sheet(isPresented: $showJobSheet) {
                 NavigationStack {
-                    List(jobOptions, id: \.self) { job in
-                        Button(job) {
-                            viewModel.job = job
-                            showJobSheet = false
+                    List {
+                        ForEach(jobOptions, id: \.self) { job in
+                            if job == "기타" {
+                                HStack {
+                                    Text("기타")
+                                    TextField("직업을 입력하고 완료 버튼을 누르세요", text: $customJob)
+                                        .onChange(of: customJob) { newValue in
+                                            viewModel.job = newValue
+                                        }
+                                }
+                            } else {
+                                Button(action: {
+                                    viewModel.job = job
+                                    showJobSheet = false
+                                }) {
+                                    Text(job)
+                                        .foregroundColor(.primary)
+                                }
+                            }
                         }
-                        .foregroundColor(.primary)
                     }
                     .navigationTitle("직업 선택")
                     .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button("완료") {
+                                showJobSheet = false
+                            }
+                            .disabled(customJob.isEmpty)
+                        }
+                    }
                 }
             }
 
